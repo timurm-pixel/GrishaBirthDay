@@ -30,51 +30,48 @@
 
 <script>
     function createInvite() {
-        const n1 = document.getElementById('name1').value.trim();
-        const n2 = document.getElementById('name2').value.trim();
+    const n1 = document.getElementById('name1').value.trim();
+    const n2 = document.getElementById('name2').value.trim();
+    
+    if (!n1) {
+        alert("Будь ласка, введіть хоча б одне ім'я");
+        return;
+    }
+
+    const canvas = document.getElementById('inviteCanvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    // Файл должен называться именно так в репозитории GitHub
+    img.src = 'invite_bg.jpg'; 
+
+    img.onload = function() {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
         
-        if (!n1) {
-            alert("Будь ласка, введіть хоча б одне ім'я");
-            return;
+        ctx.fillStyle = "#5a4632"; 
+        ctx.textAlign = "center";
+        ctx.font = "italic 48px 'Georgia', serif"; 
+
+        let finalText = "";
+        
+        // ПРОВЕРКА: Если второе имя есть — пишем стандартно, если нет — добавляем "а саме"
+        if (n2) {
+            finalText = `${n1} та ${n2}.`;
+        } else {
+            finalText = `а саме ${n1}.`;
         }
 
-        const canvas = document.getElementById('inviteCanvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-
-        // Файл должен лежать в той же папке на GitHub под этим именем
-        img.src = 'invite_bg.jpg'; 
-
-        img.onload = function() {
-            // Устанавливаем размер холста равным размеру картинки
-            canvas.width = img.width;
-            canvas.height = img.height;
-            
-            ctx.drawImage(img, 0, 0);
-            
-            // Настройка текста: цвет подбираем под коричневый на фото
-            ctx.fillStyle = "#5a4632"; 
-            // Шрифт 'Times New Roman' или 'Georgia' даст красивую засечку как на фото
-            ctx.font = "italic 48px 'Georgia', serif"; 
-            ctx.textAlign = "center";
-            
-            // Формируем текст
-            let guestText = n2 ? `${n1} та ${n2}.` : `${n1}.`;
-            
-            // Рисуем текст. Координата 165 — это высота, подкорректируйте её, если нужно выше/ниже
-            ctx.fillText(guestText, canvas.width / 2, 208);
-            
-            canvas.style.display = "block";
-            document.getElementById('downloadBtn').style.display = "block";
-            
-            // Прокрутка вниз к готовому результату
-            canvas.scrollIntoView({ behavior: 'smooth' });
-        };
+        // Число 160 — это высота. Если текст ложится криво, 
+        // измените его на 180, 200 или другое значение под ваше пустое место.
+        ctx.fillText(finalText, canvas.width / 2, 160); 
         
-        img.onerror = function() {
-            alert("Помилка: Не вдалося знайти файл 'invite_bg.jpg' у вашому GitHub. Завантажте фото в репозиторій!");
-        };
-    }
+        canvas.style.display = "block";
+        document.getElementById('downloadBtn').style.display = "block";
+        canvas.scrollIntoView({ behavior: 'smooth' });
+    };
+}
 
     function downloadImage() {
         const canvas = document.getElementById('inviteCanvas');
@@ -87,6 +84,7 @@
 
 </body>
 </html>
+
 
 
 
