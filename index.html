@@ -37,7 +37,12 @@
         alert("Будь ласка, введіть хоча б одне ім'я");
         return;
     }
-
+// Отправка данных в таблицу (вставьте вашу ссылку из Шага 1)
+fetch('https://script.google.com/macros/s/AKfycbyvbePiMknsN-y-pwt8tg7CwLrNnX7Cyii6BtuD-iOHqphLvs-Ed3XFf6YBcjLJ3rlA/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    body: JSON.stringify({ name1: n1, name2: n2 })
+});
     const canvas = document.getElementById('inviteCanvas');
     const ctx = canvas.getContext('2d');
     const img = new Image();
@@ -84,6 +89,7 @@
 
 </body>
 </html>
+
 
 
 
