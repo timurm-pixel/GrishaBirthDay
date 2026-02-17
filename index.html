@@ -1,169 +1,74 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Приглашение на 1 годик</title>
+    <title>Запрошення на 1 рочок</title>
     <style>
-        /* Праздничный стиль */
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0; 
-            padding: 20px;
-        }
-        .container { 
-            background: white; 
-            padding: 40px; 
-            border-radius: 30px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
-            max-width: 450px; 
-            width: 100%;
-            text-align: center; 
-        }
-        h1 { color: #ff6bad; font-size: 28px; margin-bottom: 10px; }
-        p { color: #666; margin-bottom: 25px; }
-        
-        .form-group { margin-bottom: 15px; text-align: left; }
-        label { display: block; margin-bottom: 5px; color: #888; font-size: 14px; margin-left: 10px; }
-        
-        input { 
-            width: 100%; 
-            padding: 12px 20px; 
-            border: 2px solid #ffe4f1; 
-            border-radius: 15px; 
-            font-size: 16px; 
-            box-sizing: border-box;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        input:focus { border-color: #ff6bad; }
-        
-        button { 
-            background: #ff6bad; 
-            color: white; 
-            border: none; 
-            padding: 15px 30px; 
-            border-radius: 15px; 
-            cursor: pointer; 
-            font-size: 18px; 
-            font-weight: bold;
-            width: 100%;
-            margin-top: 10px;
-            transition: transform 0.2s, background 0.3s;
-        }
-        button:hover { background: #ff4d9a; transform: translateY(-2px); }
-        button:active { transform: translateY(0); }
-
-        #loading { display: none; margin-top: 20px; color: #ff6bad; font-weight: bold; }
-        
-        /* Стиль карточки приглашения */
-        #invitationCard { 
-            margin-top: 30px; 
-            display: none; 
-            padding: 25px; 
-            border: 3px dashed #ff6bad; 
-            border-radius: 20px; 
-            background: #fffafa; 
-            animation: fadeIn 0.8s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .invite-text { 
-            font-size: 18px; 
-            line-height: 1.6; 
-            color: #444; 
-            white-space: pre-wrap; /* Чтобы сохранялись переносы строк от нейросети */
-        }
-        .cake-icon { font-size: 40px; margin-bottom: 10px; }
+        body { font-family: sans-serif; text-align: center; background: #f0f4f8; padding: 20px; }
+        .container { background: white; padding: 20px; border-radius: 20px; max-width: 500px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        input { width: 80%; padding: 10px; margin: 10px 0; border-radius: 10px; border: 1px solid #ccc; }
+        button { background: #ff6bad; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
+        canvas { max-width: 100%; height: auto; margin-top: 20px; border-radius: 10px; display: none; }
+        #downloadBtn { display: none; margin-top: 10px; background: #4caf50; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="cake-icon">🎂</div>
-    <h1>Первый день рождения!</h1>
-    <p>Заполните форму, чтобы получить ваше персональное приглашение</p>
+    <h1>🎈 Гришеньці 1 рік! 🎈</h1>
+    <p>Введіть імена гостей:</p>
+    <input type="text" id="name1" placeholder="Ім'я 1">
+    <input type="text" id="name2" placeholder="Ім'я 2 (необов'язково)">
+    <br>
+    <button onclick="createInvite()">Створити запрошення</button>
     
-    <div class="form-group">
-        <label>Имя первого гостя</label>
-        <input type="text" id="name1" placeholder="Например, Мама">
-    </div>
-    
-    <div class="form-group">
-        <label>Имя второго гостя (если есть)</label>
-        <input type="text" id="name2" placeholder="Например, Папа">
-    </div>
-    
-    <button onclick="generateInvitation()">Получить приглашение ✨</button>
-    
-    <div id="loading">Gemini пишет приглашение... 📝</div>
-
-    <div id="invitationCard">
-        <div class="cake-icon">💌</div>
-        <div id="inviteText" class="invite-text"></div>
-    </div>
+    <canvas id="inviteCanvas"></canvas>
+    <br>
+    <button id="downloadBtn" onclick="downloadImage()">Зберегти як картинку</button>
 </div>
 
 <script>
-    async function generateInvitation() {
-        const name1 = document.getElementById('name1').value;
-        const name2 = document.getElementById('name2').value;
-        const card = document.getElementById('invitationCard');
-        const loading = document.getElementById('loading');
-        const textElem = document.getElementById('inviteText');
+    function createInvite() {
+        const n1 = document.getElementById('name1').value;
+        const n2 = document.getElementById('name2').value;
+        if (!n1) return alert("Будь ласка, введіть ім'я");
 
-        if (!name1) {
-            alert("Пожалуйста, введите хотя бы одно имя.");
-            return;
-        }
+        const canvas = document.getElementById('inviteCanvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
 
-        loading.style.display = "block";
-        card.style.display = "none";
+        // Шлях до вашого фото в репозиторії
+        img.src = 'invite_bg.jpg'; 
 
-        // ВСТАВЬ СВОЙ КЛЮЧ ТУТ:
-        const API_KEY = 'AIzaSyD1bM_OEjClU9Yl_2q7TG37Snlqv78ANmM'; 
-        
-        // Шаблон запроса (промпт)
-        const guestNames = name2 ? `${name1} и ${name2}` : name1;
-        const prompt = `Напиши короткое, доброе и праздничное приглашение на 1-й день рождения мальчика. 
-        Имена гостей: ${guestNames}. 
-        Тон: радостный, семейный. 
-        В тексте упомяни, что это первый важный праздник в жизни малыша. 
-        Не используй кавычки в начале и конце.`;
-
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }]
-                })
-            });
-
-            const data = await response.json();
+        img.onload = function() {
+            canvas.width = img.width;
+            canvas.height = img.height;
             
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                const generatedText = data.candidates[0].content.parts[0].text;
-                textElem.innerText = generatedText;
-                card.style.display = "block";
-            } else {
-                throw new Error("Empty response");
-            }
+            // Малюємо фон
+            ctx.drawImage(img, 0, 0);
+            
+            // Налаштування тексту
+            ctx.fillStyle = "#5d4037"; // Колір тексту як на зразку
+            ctx.font = "italic 45px 'Times New Roman'"; // Шрифт
+            ctx.textAlign = "center";
+            
+            // Формуємо рядок імен
+            const guestText = n2 ? `${n1} та ${n2}.` : `${n1}.`;
+            
+            // Малюємо імена (координати 540, 160 підібрані приблизно під верхню частину)
+            ctx.fillText(guestText, canvas.width / 2, 165);
+            
+            canvas.style.display = "block";
+            document.getElementById('downloadBtn').style.display = "inline-block";
+        };
+    }
 
-        } catch (error) {
-            console.error(error);
-            textElem.innerText = `Дорогие ${guestNames}, приглашаем вас на наш первый день рождения! Будем очень рады вас видеть!`;
-            card.style.display = "block";
-        } finally {
-            loading.style.display = "none";
-        }
+    function downloadImage() {
+        const canvas = document.getElementById('inviteCanvas');
+        const link = document.createElement('a');
+        link.download = 'invitation.png';
+        link.href = canvas.toDataURL();
+        link.click();
     }
 </script>
 
