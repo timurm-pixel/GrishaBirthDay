@@ -2,72 +2,85 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Запрошення на 1 рочок</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Запрошення для Гришеньки</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f0f4f8; padding: 20px; }
-        .container { background: white; padding: 20px; border-radius: 20px; max-width: 500px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        input { width: 80%; padding: 10px; margin: 10px 0; border-radius: 10px; border: 1px solid #ccc; }
-        button { background: #ff6bad; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
-        canvas { max-width: 100%; height: auto; margin-top: 20px; border-radius: 10px; display: none; }
-        #downloadBtn { display: none; margin-top: 10px; background: #4caf50; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #fce4ec; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 450px; text-align: center; }
+        h1 { color: #d81b60; font-size: 22px; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border: 2px solid #f8bbd0; border-radius: 12px; font-size: 16px; outline: none; }
+        button { background-color: #ec407a; color: white; border: none; padding: 15px 25px; border-radius: 12px; cursor: pointer; font-size: 16px; width: 100%; font-weight: bold; margin-top: 10px; }
+        canvas { max-width: 100%; height: auto; margin-top: 20px; border-radius: 15px; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        #downloadBtn { background-color: #43a047; display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🎈 Гришеньці 1 рік! 🎈</h1>
-    <p>Введіть імена гостей:</p>
-    <input type="text" id="name1" placeholder="Ім'я 1">
-    <input type="text" id="name2" placeholder="Ім'я 2 (необов'язково)">
-    <br>
-    <button onclick="createInvite()">Створити запрошення</button>
+    <h1>🎈 Створити запрошення 🎈</h1>
+    <input type="text" id="name1" placeholder="Ім'я першого гостя (напр. Юрій)">
+    <input type="text" id="name2" placeholder="Ім'я другого гостя (напр. Інна)">
+    
+    <button onclick="createInvite()">Створити та подивитись ✨</button>
     
     <canvas id="inviteCanvas"></canvas>
-    <br>
-    <button id="downloadBtn" onclick="downloadImage()">Зберегти як картинку</button>
+    
+    <button id="downloadBtn" onclick="downloadImage()">⬇️ Зберегти та відправити гостю</button>
 </div>
 
 <script>
     function createInvite() {
-        const n1 = document.getElementById('name1').value;
-        const n2 = document.getElementById('name2').value;
-        if (!n1) return alert("Будь ласка, введіть ім'я");
+        const n1 = document.getElementById('name1').value.trim();
+        const n2 = document.getElementById('name2').value.trim();
+        
+        if (!n1) {
+            alert("Будь ласка, введіть хоча б одне ім'я");
+            return;
+        }
 
         const canvas = document.getElementById('inviteCanvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
 
-        // Шлях до вашого фото в репозиторії
+        // Файл должен лежать в той же папке на GitHub под этим именем
         img.src = 'invite_bg.jpg'; 
 
         img.onload = function() {
+            // Устанавливаем размер холста равным размеру картинки
             canvas.width = img.width;
             canvas.height = img.height;
             
-            // Малюємо фон
             ctx.drawImage(img, 0, 0);
             
-            // Налаштування тексту
-            ctx.fillStyle = "#5d4037"; // Колір тексту як на зразку
-            ctx.font = "italic 45px 'Times New Roman'"; // Шрифт
+            // Настройка текста: цвет подбираем под коричневый на фото
+            ctx.fillStyle = "#5a4632"; 
+            // Шрифт 'Times New Roman' или 'Georgia' даст красивую засечку как на фото
+            ctx.font = "italic 48px 'Georgia', serif"; 
             ctx.textAlign = "center";
             
-            // Формуємо рядок імен
-            const guestText = n2 ? `${n1} та ${n2}.` : `${n1}.`;
+            // Формируем текст
+            let guestText = n2 ? `${n1} та ${n2}.` : `${n1}.`;
             
-            // Малюємо імена (координати 540, 160 підібрані приблизно під верхню частину)
-            ctx.fillText(guestText, canvas.width / 2, 165);
+            // Рисуем текст. Координата 165 — это высота, подкорректируйте её, если нужно выше/ниже
+            ctx.fillText(guestText, canvas.width / 2, 160);
             
             canvas.style.display = "block";
-            document.getElementById('downloadBtn').style.display = "inline-block";
+            document.getElementById('downloadBtn').style.display = "block";
+            
+            // Прокрутка вниз к готовому результату
+            canvas.scrollIntoView({ behavior: 'smooth' });
+        };
+        
+        img.onerror = function() {
+            alert("Помилка: Не вдалося знайти файл 'invite_bg.jpg' у вашому GitHub. Завантажте фото в репозиторій!");
         };
     }
 
     function downloadImage() {
         const canvas = document.getElementById('inviteCanvas');
         const link = document.createElement('a');
-        link.download = 'invitation.png';
-        link.href = canvas.toDataURL();
+        link.download = 'zaproshennya_na_1_rik.png';
+        link.href = canvas.toDataURL('image/png');
         link.click();
     }
 </script>
